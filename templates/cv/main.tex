@@ -1,0 +1,93 @@
+\documentclass[aspectratio=169]{beamer}
+
+% ── Tema base ─────────────────────────────────────────────────────────────────
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+% ── Colores UTEC ──────────────────────────────────────────────────────────────
+\definecolor{utecblue}{RGB}{0,82,155}
+\definecolor{uteccyan}{RGB}{0,174,219}
+\definecolor{lightgray}{RGB}{245,245,245}
+
+\setbeamercolor{frametitle}{bg=utecblue, fg=white}
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{subtitle}{fg=uteccyan}
+\setbeamercolor{author}{fg=white}
+\setbeamercolor{institute}{fg=white!80}
+\setbeamercolor{date}{fg=white!70}
+
+\setbeamercolor{block title}{bg=utecblue, fg=white}
+\setbeamercolor{block body}{bg=utecblue!8, fg=black}
+\setbeamercolor{alertblock title}{bg=uteccyan!80!black, fg=white}
+\setbeamercolor{alertblock body}{bg=uteccyan!12, fg=black}
+
+\setbeamercolor{itemize item}{fg=utecblue}
+\setbeamercolor{itemize subitem}{fg=uteccyan}
+\setbeamertemplate{itemize item}{\small$\blacktriangleright$}
+\setbeamertemplate{itemize subitem}{\small$\triangleright$}
+
+\setbeamertemplate{footline}{%
+  \hfill\usebeamerfont{footline}\insertframenumber\,/\,\inserttotalframenumber\hspace{1em}\vspace{0.4em}
+}
+
+\setbeamercolor{background canvas}{bg=white}
+
+% ── Paquetes ──────────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{pgfplots}
+\usepackage{xcolor}
+\usepackage{url}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta, shapes.geometric, positioning, fit, backgrounds}
+
+% ── Comando para placeholder de imagen/video ──────────────────────────────────
+\newcommand{\imgplaceholder}[2][8cm]{%
+    \begin{tikzpicture}
+    \node[draw=utecblue!40, dashed, fill=utecblue!5,
+          minimum width=#1, minimum height=4cm,
+          font=\small\color{utecblue!70}, align=center,
+          rounded corners=4pt] {#2};
+    \end{tikzpicture}%
+}
+
+% ── Metadatos ─────────────────────────────────────────────────────────────────
+\title{Title}
+\subtitle{Subtitle}
+\author{Jamcy}
+\institute{UTEC}
+\date{2026-I}
+
+% =============================================================================
+\begin{document}
+% =============================================================================
+
+\begin{frame}{Hello World!}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+    \footnotesize
+    \begin{thebibliography}{1}
+    \end{thebibliography}
+\end{frame}
+
+
+\begin{frame}[plain]
+    \centering
+    \vspace{2cm}
+    {\color{white}\Huge\bfseries Thank you\par}
+    \vspace{0.8em}
+\end{frame}
+
+
+\end{document}
