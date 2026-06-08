@@ -1,0 +1,45 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerinnerthemejamcy}[2026/06/07 Jamcy inner theme]
+
+\mode<presentation>
+
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+\setbeamertemplate{itemize item}{\raise0.15ex\hbox{\large$\bullet$}}
+\setbeamertemplate{itemize subitem}{\raise0.2ex\hbox{\small$\blacktriangleright$}}
+\setbeamertemplate{enumerate item}{\insertenumlabel.}
+
+\setbeamertemplate{frametitle}{
+  \vspace{0.25cm}
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=1.15cm,rightskip=1.15cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle\par
+    \ifx\insertframesubtitle\empty
+    \else
+      \vspace{0.1cm}
+      {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle\par}
+    \fi
+    \vspace{0.18cm}
+    {\color{jamcyRule}\rule{\dimexpr\paperwidth-2.3cm\relax}{0.4pt}}
+  \end{beamercolorbox}
+}
+
+\setbeamertemplate{title page}{
+  \begin{minipage}[c][0.78\paperheight]{\textwidth}
+    \vfill
+    {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}
+    \vspace{0.35cm}
+    \ifx\insertsubtitle\empty
+    \else
+      {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}
+      \vspace{0.35cm}
+    \fi
+    {\color{jamcyAccent}\rule{0.28\textwidth}{1.2pt}\par}
+    \vspace{0.55cm}
+    {\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par}
+    \vspace{0.15cm}
+    {\usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par}
+    \vfill
+  \end{minipage}
+}
+
+\mode<all>

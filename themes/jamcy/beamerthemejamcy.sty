@@ -1,0 +1,28 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemejamcy}[2026/06/07 Jamcy Beamer theme]
+
+\mode<presentation>
+
+\usecolortheme{jamcy}
+\usefonttheme{jamcy}
+\useinnertheme{jamcy}
+
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamertemplate{headline}{}
+
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.72\paperwidth,ht=2.8ex,dp=1.2ex,leftskip=1.6em]{author in head/foot}%
+      \usebeamerfont{author in head/foot}\insertshorttitle
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.28\paperwidth,ht=2.8ex,dp=1.2ex,rightskip=1.6em plus 1fil]{date in head/foot}%
+      \usebeamerfont{date in head/foot}\hfill\insertframenumber{} / \inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+}
+
+\setbeamersize{text margin left=1.15cm,text margin right=1.15cm}
+
+\mode<all>
