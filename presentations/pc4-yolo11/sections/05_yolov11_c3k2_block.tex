@@ -1,0 +1,79 @@
+% ── SLIDE 5: C3K2 ──────────────────────────────────────────────
+\begin{frame}{YOLOv11: C3K2 Block}
+  \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+      \textbf{C3K block}
+      \begin{itemize}
+        \item Repeats bottleneck blocks $n$ times to deepen feature extraction.
+        \item Final concat keeps both transformed and preserved features.
+      \end{itemize}
+      \vspace{0.2em}
+      \textbf{C3K2 improvement}
+      \begin{itemize}
+        \item Replaces each repeated bottleneck with a smaller C3K unit.
+        \item Keeps multi-stage feature reuse while reducing cost.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+      \centering
+      \vspace{1cm}
+      \begin{tikzpicture}[
+          outer/.style={
+              draw=utecblue!85,
+              fill=utecblue!5,
+              rounded corners=13pt,
+              line width=1.1pt,
+              minimum width=2.55cm,
+              minimum height=5.25cm
+            },
+          layer/.style={
+              draw=utecblue!85,
+              fill=white,
+              rounded corners=5pt,
+              line width=0.9pt,
+              minimum width=1.85cm,
+              minimum height=0.42cm,
+              font=\scriptsize\bfseries,
+              align=center
+            },
+          arr/.style={-{Stealth[length=4pt]}, utecblue!80, line width=0.9pt},
+          shortcut/.style={-{Stealth[length=4pt]}, utecblue!80, line width=1.0pt}
+        ]
+        \node[outer] (c3kbox) at (-1.65,0) {};
+        \node[font=\large\bfseries, text=utecblue!90] at (-1.65,2.25) {C3K};
+        \node[layer] (c3k_cbs) at (-1.65,1.45) {CBS};
+        \node[layer] (c3k_bn1) at (-1.65,0.72) {Bottle Neck};
+        \node[font=\scriptsize, text=utecblue!80] at (-1.65,0.08) {$n$};
+        \node[layer] (c3k_bn2) at (-1.65,-0.64) {Bottle Neck};
+        \node[layer] (c3k_concat) at (-1.65,-1.34) {Concat};
+        \node[layer] (c3k_conv) at (-1.65,-2.04) {Conv 1x1};
+
+        \draw[arr] (c3k_cbs) -- (c3k_bn1);
+        \draw[arr] (c3k_bn1) -- (c3k_bn2);
+        \draw[arr] (c3k_bn2) -- (c3k_concat);
+        \draw[arr] (c3k_concat) -- (c3k_conv);
+        \draw[shortcut] (c3k_cbs.east) -- ++(0.42,0) |- (c3k_concat.east);
+        \draw[shortcut] (c3k_bn1.east) -- ++(0.30,0) |- (c3k_concat.east);
+        \draw[shortcut] (c3k_bn2.east) -- ++(0.18,0) |- (c3k_concat.east);
+
+        \node[outer] (c3k2box) at (1.65,0) {};
+        \node[font=\large\bfseries, text=utecblue!90] at (1.65,2.25) {C3K2};
+        \node[layer] (c3k2_cbs) at (1.65,1.45) {CBS};
+        \node[layer] (c3k2_c3k1) at (1.65,0.72) {C3K};
+        \node[font=\scriptsize, text=utecblue!80] at (1.65,0.08) {$n$};
+        \node[layer] (c3k2_c3k2) at (1.65,-0.64) {C3K};
+        \node[layer] (c3k2_concat) at (1.65,-1.34) {Concat};
+        \node[layer] (c3k2_conv) at (1.65,-2.04) {Conv 1x1};
+
+        \draw[arr] (c3k2_cbs) -- (c3k2_c3k1);
+        \draw[arr] (c3k2_c3k1) -- (c3k2_c3k2);
+        \draw[arr] (c3k2_c3k2) -- (c3k2_concat);
+        \draw[arr] (c3k2_concat) -- (c3k2_conv);
+        \draw[shortcut] (c3k2_cbs.east) -- ++(0.42,0) |- (c3k2_concat.east);
+        \draw[shortcut] (c3k2_c3k1.east) -- ++(0.30,0) |- (c3k2_concat.east);
+        \draw[shortcut] (c3k2_c3k2.east) -- ++(0.18,0) |- (c3k2_concat.east);
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+

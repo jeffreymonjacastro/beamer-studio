@@ -1,0 +1,72 @@
+% ── SLIDE 6: Backbone ──────────────────────────────────────────────
+\begin{frame}{YOLOv11: Backbone Step}
+  \begin{columns}[c]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \begin{tikzpicture}[
+          outer/.style={
+              draw=utecblue!85,
+              fill=utecblue!5,
+              rounded corners=13pt,
+              line width=1.1pt,
+              align=center
+            },
+          smallbox/.style={
+              draw=utecblue!85,
+              fill=white,
+              rounded corners=6pt,
+              line width=0.9pt,
+              minimum width=2.35cm,
+              minimum height=0.50cm,
+              font=\scriptsize\bfseries,
+              align=center
+            },
+          blockbox/.style={
+              draw=utecblue!85,
+              fill=white,
+              rounded corners=6pt,
+              line width=0.9pt,
+              minimum width=2.15cm,
+              minimum height=0.56cm,
+              font=\scriptsize\bfseries,
+              align=center
+            },
+          arr/.style={-{Stealth[length=5pt]}, utecblue!80, line width=1.0pt}
+        ]
+        \node[outer, minimum width=2.25cm, minimum height=1.0cm] (input) at (-3.35,1.65)
+        {\Large\bfseries Input\\[-1pt]\scriptsize 640x640};
+
+        \node[outer, minimum width=2.85cm, minimum height=2.30cm] (bb) at (-3.35,-1.05) {};
+        \node[font=\small\bfseries, text=utecblue!90] at (-3.35,-0.18) {Backbone Block};
+        \node[smallbox] (bb_cbs) at (-3.35,-0.82) {CBS};
+        \node[smallbox] (bb_c3k2) at (-3.35,-1.55) {C3K2};
+
+        \draw[arr] (input.south) -- ++(0,-0.75) -- (bb.north);
+        \draw[arr] (bb_cbs) -- (bb_c3k2);
+
+        \node[outer, minimum width=2.75cm, minimum height=5.75cm] (backbone) at (1.15,0) {};
+        \node[font=\large\bfseries, text=utecblue!90] at (1.15,2.55) {Backbone};
+        \node[smallbox] (b_cbs) at (1.15,1.88) {CBS};
+        \node[blockbox] (b1) at (1.15,0.92) {Backbone\\Block};
+        \node[blockbox] (b2) at (1.15,-0.04) {Backbone\\Block};
+        \node[blockbox] (b3) at (1.15,-1.00) {Backbone\\Block};
+        \node[blockbox] (b4) at (1.15,-1.96) {Backbone\\Block};
+
+        \draw[arr] (b_cbs) -- (b1);
+        \draw[arr] (b1) -- (b2);
+        \draw[arr] (b2) -- (b3);
+        \draw[arr] (b3) -- (b4);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{Backbone role}
+      \begin{itemize}
+        \item Receives the input image and extracts visual features at increasing depth.
+        \item Early CBS layer detects simple patterns such as edges, colors, and small textures.
+        \item Each stage reduces spatial resolution and increases semantic information for detection.
+        \item Output feature maps feed the neck
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+

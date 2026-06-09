@@ -1,0 +1,35 @@
+% ── SLIDE 14: SORT FILTRO DE KALMAN ────────────────────────────────────────────
+\begin{frame}{SORT: Kalman Filter for Motion Prediction}
+  \textbf{State vector} (7-dimensional, one Kalman filter per track):
+  \[
+    \mathbf{x} = \bigl[c_x,\; c_y,\; s,\; r,\; \dot{c}_x,\; \dot{c}_y,\; \dot{s}\bigr]^\top
+  \]
+  where $c_x, c_y$: bbox centre $\cdot$ $s = w \cdot h$: area $\cdot$
+  $r = w/h$: aspect ratio (assumed constant) $\cdot$ $\dot{(\cdot)}$: velocity
+
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Prediction step} (before observing detections):
+      \[
+        \mathbf{x}^-_t = F\,\mathbf{x}_{t-1}, \qquad
+        P^-_t = F P_{t-1} F^\top + Q
+      \]
+      $F$: constant-velocity transition matrix \quad
+      $P$: state covariance \quad $Q$: process noise
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Update step} (after associating a detection $\mathbf{z}=[c_x,c_y,s,r]^\top$):
+      \[
+        K = P^-_t H^\top\!\bigl(H P^-_t H^\top + R\bigr)^{-1}
+      \]
+      \[
+        \mathbf{x}_t = \mathbf{x}^-_t + K\!\left(\mathbf{z} - H\mathbf{x}^-_t\right),
+        \quad P_t = (I - KH)\,P^-_t
+      \]
+      $H$: observation matrix \quad $R$: measurement noise \quad
+      $K$: Kalman gain (weights prediction vs.\ measurement)
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+\end{frame}
+

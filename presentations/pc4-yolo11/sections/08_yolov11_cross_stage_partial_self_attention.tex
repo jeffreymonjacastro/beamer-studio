@@ -1,0 +1,84 @@
+% ── SLIDE 8: C2PSA ──────────────────────────────────────────────
+\begin{frame}{YOLOv11: Cross Stage Partial Self-Attention}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \vspace{-0.15cm}
+      \begin{tikzpicture}[
+          outer/.style={
+              draw=utecblue!85,
+              fill=utecblue!5,
+              rounded corners=13pt,
+              line width=1.1pt,
+              minimum width=2.35cm,
+              minimum height=5.75cm
+            },
+          layer/.style={
+              draw=utecblue!85,
+              fill=white,
+              rounded corners=5pt,
+              line width=0.9pt,
+              minimum width=1.65cm,
+              minimum height=0.42cm,
+              font=\scriptsize\bfseries,
+              align=center
+            },
+          arr/.style={-{Stealth[length=4pt]}, utecblue!80, line width=0.9pt},
+          skip/.style={-{Stealth[length=4pt]}, utecblue!80, line width=1.0pt}
+        ]
+        \node[outer] (psa_box) at (-1.65,0) {};
+        \node[font=\large\bfseries, text=utecblue!90] at (-1.65,2.46) {PSA};
+        \node[layer] (p_conv1) at (-1.65,1.70) {Conv 1x1};
+        \node[layer] (p_split) at (-1.65,0.95) {Split};
+        \node[layer] (attn) at (-1.65,0.20) {Attention};
+        \node[layer] (ffn) at (-1.65,-0.55) {FFN};
+        \node[layer] (p_concat) at (-1.65,-1.30) {Concat};
+        \node[layer] (p_conv2) at (-1.65,-2.05) {Conv 1x1};
+        \draw[utecblue!65, rounded corners=4pt, line width=0.8pt] (-2.62,0.57) rectangle (-0.68,-0.92);
+        \coordinate (psa_core_east) at (-0.68,-0.18);
+
+        \draw[arr] (p_conv1) -- (p_split);
+        \draw[arr] (p_split) -- (attn);
+        \draw[arr] (attn) -- (ffn);
+        \draw[arr] (ffn) -- (p_concat);
+        \draw[arr] (p_concat) -- (p_conv2);
+        \draw[skip] (p_split.east) -- ++(0.52,0) |- (p_concat.east);
+
+        \node[outer] (c2_box) at (1.65,0) {};
+        \node[font=\large\bfseries, text=utecblue!90] at (1.65,2.46) {C2PSA};
+        \node[layer] (c_conv1) at (1.65,1.70) {Conv 1x1};
+        \node[layer] (split) at (1.65,0.95) {Split};
+        \node[layer] (psa1) at (1.65,0.20) {PSA};
+        \node[layer] (psa2) at (1.65,-0.55) {PSA};
+        \node[layer] (c_concat) at (1.65,-1.30) {Concat};
+        \node[layer] (c_conv2) at (1.65,-2.05) {Conv 1x1};
+
+        \draw[arr] (c_conv1) -- (split);
+        \draw[arr] (split) -- (psa1);
+        \draw[arr] (psa1) -- node[midway, right, font=\scriptsize\bfseries] {$n$} (psa2);
+        \draw[arr] (psa2) -- (c_concat);
+        \draw[arr] (c_concat) -- (c_conv2);
+        \draw[skip] (split.east) -- ++(0.52,0) |- (c_concat.east);
+
+        \draw[arr] (psa_core_east) -- (c2_box.west);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \small
+      \textbf{Attention core}
+      \[
+        \mathrm{Attn}(Q,K,V)=
+        \mathrm{softmax}\!\left(
+        \frac{QK^\top}{\sqrt{d_k}}
+        \right)V
+      \]
+      \begin{itemize}
+        \item $QK^\top$ scores how strongly each position should attend to other positions.
+        \item $\sqrt{d_k}$ stabilizes score scale before softmax.
+        \item PSA adds global spatial context, then FFN refines channel features.
+        \item C2PSA first splits channels, applies PSA on one path, then concatenates and compresses with Conv $1{\times}1$.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+

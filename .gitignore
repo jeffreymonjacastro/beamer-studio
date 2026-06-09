@@ -37,8 +37,12 @@
 *.pyg
 _minted*/
 
-# Build and output directories
-**/build/
+# Build directories: keep only generated PDFs
+**/build/**
+!**/build/**/
+!**/build/**/*.pdf
+
+# Legacy output directories
 **/output/*.pdf
 **/output/*.log
 **/output/*.aux

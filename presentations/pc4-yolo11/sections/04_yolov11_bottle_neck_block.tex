@@ -1,0 +1,68 @@
+% ── SLIDE 4: Bottle Neck ──────────────────────────────────────────────
+\begin{frame}{YOLOv11: Bottle Neck Block}
+  \begin{columns}[c]
+    \begin{column}{0.40\textwidth}
+      \centering
+      \begin{tikzpicture}[
+          outer/.style={
+              draw=utecblue!85,
+              fill=utecblue!5,
+              rounded corners=15pt,
+              line width=1.2pt,
+              minimum width=3.35cm,
+              minimum height=5.25cm
+            },
+          layer/.style={
+              draw=utecblue!85,
+              fill=white,
+              rounded corners=7pt,
+              line width=1.0pt,
+              minimum width=2.35cm,
+              minimum height=0.62cm,
+              font=\small\bfseries,
+              align=center
+            },
+          sum/.style={
+              circle,
+              draw=utecblue!85,
+              fill=white,
+              line width=1.0pt,
+              minimum size=0.62cm,
+              font=\large\bfseries
+            },
+          arr/.style={-{Stealth[length=5pt]}, utecblue!80, line width=1.0pt},
+          shortcut/.style={-{Stealth[length=5pt]}, utecblue!80, line width=1.1pt}
+        ]
+        \node[outer] at (0,0) {};
+        \node[font=\Large\bfseries, text=utecblue!90] at (0,2.13) {Bottle Neck};
+
+        \node[layer] (cbs1) at (0,1.08) {CBS};
+        \node[layer] (cbs2) at (0,-0.18) {CBS};
+        \node[sum] (add) at (0,-1.45) {$+$};
+
+        \coordinate (input) at (0,1.75);
+        \draw[arr] (input) -- (cbs1.north);
+        \draw[arr] (cbs1) -- (cbs2);
+        \draw[arr] (cbs2) -- (add);
+
+        \draw[shortcut] (input) -- ++(-1.45,0) |- (add.west);
+        \node[font=\scriptsize, text=utecblue!80] at (-1.06,1.62) {shortcut};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \textbf{Bottleneck idea}
+      \begin{itemize}
+        \item Two CBS layers transform the feature map with low extra cost.
+        \item The shortcut adds the input back to the output:
+      \end{itemize}
+      \[
+        \mathbf{y} = F(\mathbf{x}) + \mathbf{x}
+      \]
+      \begin{itemize}
+        \item Same residual principle as a ResNet block: preserve useful input information and improve gradient flow.
+        \item CBS means \textbf{Conv + BatchNorm + SiLU}; convolution extracts features, BatchNorm stabilizes training, and SiLU adds nonlinearity.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+

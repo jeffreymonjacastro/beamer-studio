@@ -1,0 +1,60 @@
+% ── SLIDE 7: SPFF ──────────────────────────────────────────────
+\begin{frame}{YOLOv11: Spatial Pyramid Pooling Fast}
+  \begin{columns}[c]
+    \begin{column}{0.46\textwidth}
+      \begin{itemize}
+        \item It expands the receptive field before features are passed to the neck.
+        \item Repeated max-pooling captures context at several spatial scales.
+        \item Concat merges local and pooled features so the neck can fuse richer multi-scale information.
+        \item It is efficient because sequential pooling reuses intermediate outputs instead of computing separate large kernels.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \centering
+      \begin{tikzpicture}[
+          outer/.style={
+              draw=utecblue!85,
+              fill=utecblue!5,
+              rounded corners=15pt,
+              line width=1.2pt,
+              minimum width=3.45cm,
+              minimum height=6.00cm
+            },
+          layer/.style={
+              draw=utecblue!85,
+              fill=white,
+              rounded corners=6pt,
+              line width=0.95pt,
+              minimum width=2.15cm,
+              minimum height=0.46cm,
+              font=\scriptsize\bfseries,
+              align=center
+            },
+          arr/.style={-{Stealth[length=4pt]}, utecblue!80, line width=0.9pt},
+          skip/.style={-{Stealth[length=4pt]}, utecblue!80, line width=1.0pt}
+        ]
+        \node[outer] at (0,0) {};
+        \node[font=\Large\bfseries, text=utecblue!90] at (0,2.68) {SPPF};
+
+        \node[layer] (conv1) at (0,1.95) {Conv 1x1};
+        \node[layer] (pool1) at (0,1.15) {MaxPool2d};
+        \node[layer] (pool2) at (0,0.35) {MaxPool2d};
+        \node[layer] (pool3) at (0,-0.45) {MaxPool2d};
+        \node[layer] (concat) at (0,-1.25) {Concat};
+        \node[layer] (conv2) at (0,-2.05) {Conv 1x1};
+
+        \draw[arr] (conv1) -- (pool1);
+        \draw[arr] (pool1) -- (pool2);
+        \draw[arr] (pool2) -- (pool3);
+        \draw[arr] (pool3) -- (concat);
+        \draw[arr] (concat) -- (conv2);
+
+        \draw[skip] (conv1.east) -- ++(0.65,0) |- (concat.east);
+        \draw[skip] (pool1.east) -- ++(0.48,0) |- (concat.east);
+        \draw[skip] (pool2.east) -- ++(0.31,0) |- (concat.east);
+        \draw[skip] (pool3.east) -- ++(0.14,0) |- (concat.east);
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+

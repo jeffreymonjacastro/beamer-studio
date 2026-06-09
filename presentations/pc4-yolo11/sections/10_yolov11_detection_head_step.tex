@@ -1,0 +1,203 @@
+% ── SLIDE 10: Detection Head Block ──────────────────────────────────────────────
+\begin{frame}{YOLOv11: Detection Head Step}
+  \centering
+  \vspace{-0.15cm}
+  \resizebox{0.98\textwidth}{!}{%
+    \begin{tikzpicture}[
+        panel/.style={
+            draw=utecblue!65,
+            fill=utecblue!3,
+            rounded corners=5pt,
+            line width=0.9pt,
+            align=center
+          },
+        greenpanel/.style={
+            draw=green!55!black,
+            fill=green!5,
+            rounded corners=5pt,
+            line width=0.9pt,
+            align=center
+          },
+        purplepanel/.style={
+            draw=purple!65,
+            fill=purple!5,
+            rounded corners=5pt,
+            line width=0.9pt,
+            align=center
+          },
+        layerblue/.style={
+            draw=utecblue!75,
+            fill=utecblue!10,
+            rounded corners=3pt,
+            line width=0.8pt,
+            minimum width=1.58cm,
+            minimum height=0.38cm,
+            font=\tiny\bfseries,
+            align=center
+          },
+        decodebox/.style={
+            draw=orange!80!black,
+            fill=orange!12,
+            rounded corners=3pt,
+            line width=0.8pt,
+            minimum width=1.58cm,
+            minimum height=0.38cm,
+            font=\tiny\bfseries,
+            text=orange!70!black,
+            align=center
+          },
+        layergreen/.style={
+            draw=green!55!black,
+            fill=green!10,
+            rounded corners=3pt,
+            line width=0.8pt,
+            minimum width=1.58cm,
+            minimum height=0.38cm,
+            font=\tiny\bfseries,
+            align=center
+          },
+        cubeblue/.style={
+            draw=blue!75!black,
+            fill=blue!25,
+            rounded corners=1pt,
+            line width=0.7pt,
+            minimum width=0.78cm,
+            minimum height=0.58cm
+          },
+        cubegreen/.style={
+            draw=green!75!black,
+            fill=green!25,
+            rounded corners=1pt,
+            line width=0.7pt,
+            minimum width=0.78cm,
+            minimum height=0.58cm
+          },
+        cubepurple/.style={
+            draw=purple!75!black,
+            fill=purple!25,
+            rounded corners=1pt,
+            line width=0.7pt,
+            minimum width=0.78cm,
+            minimum height=0.58cm
+          },
+        arrblue/.style={-{Stealth[length=4pt]}, utecblue!85, line width=0.9pt},
+        arrgreen/.style={-{Stealth[length=4pt]}, green!55!black, line width=0.9pt},
+        arrpurple/.style={-{Stealth[length=4pt]}, purple!75, line width=0.9pt},
+        arr/.style={-{Stealth[length=4pt]}, black!75, line width=0.85pt}
+      ]
+      % Inputs
+      \node[font=\scriptsize\bfseries, text=utecblue!90] at (-6.25,3.05) {Neck inputs};
+
+      \node[panel, minimum width=1.95cm, minimum height=1.75cm] (p3in) at (-6.25,1.70) {};
+      \node[font=\scriptsize\bfseries, text=utecblue!90] at (-6.25,2.28) {P3 / 8};
+      \node[font=\tiny, align=center] at (-6.25,2.02) {$80{\times}80{\times}C_3$\\(Stride = 8)};
+      \node[cubeblue] at (-6.25,1.50) {};
+      \draw[step=0.13cm, utecblue!55, line width=0.25pt] (-6.62,1.22) grid (-5.88,1.78);
+      \node[font=\tiny] at (-6.25,0.91) {$80{\times}80$};
+
+      \node[greenpanel, minimum width=1.95cm, minimum height=1.75cm] (p4in) at (-6.25,-0.25) {};
+      \node[font=\scriptsize\bfseries, text=green!55!black] at (-6.25,0.33) {P4 / 16};
+      \node[font=\tiny, align=center] at (-6.25,0.07) {$40{\times}40{\times}C_4$\\(Stride = 16)};
+      \node[cubegreen] at (-6.25,-0.45) {};
+      \draw[step=0.13cm, green!55!black!50, line width=0.25pt] (-6.62,-0.73) grid (-5.88,-0.17);
+      \node[font=\tiny] at (-6.25,-1.04) {$40{\times}40$};
+
+      \node[purplepanel, minimum width=1.95cm, minimum height=1.75cm] (p5in) at (-6.25,-2.20) {};
+      \node[font=\scriptsize\bfseries, text=purple!75] at (-6.25,-1.62) {P5 / 32};
+      \node[font=\tiny, align=center] at (-6.25,-1.88) {$20{\times}20{\times}C_5$\\(Stride = 32)};
+      \node[cubepurple] at (-6.25,-2.40) {};
+      \draw[step=0.13cm, purple!60, line width=0.25pt] (-6.62,-2.68) grid (-5.88,-2.12);
+      \node[font=\tiny] at (-6.25,-2.99) {$20{\times}20$};
+
+      % Central detect head
+      \node[panel, minimum width=5.95cm, minimum height=6.10cm] (head) at (-1.65,0) {};
+      \node[font=\scriptsize\bfseries, text=utecblue!95] at (-1.65,2.68) {Detect Head (per scale)};
+
+      \node[panel, minimum width=2.55cm, minimum height=4.95cm] (boxbranch) at (-3.05,0.00) {};
+      \node[font=\tiny\bfseries, text=utecblue!90] at (-3.05,2.12) {Box Branch};
+      \node[layerblue] (bconv1) at (-3.05,1.58) {Conv 3x3};
+      \node[layerblue] (bconv2) at (-3.05,0.82) {Conv 3x3};
+      \node[layerblue, minimum height=0.50cm] (bbox) at (-3.05,-0.10) {Conv2d\\$4{\times}$reg\_max};
+      \node[layerblue] (dfl) at (-3.05,-0.88) {DFL};
+      \node[decodebox] (decode) at (-3.05,-1.62) {Decode Box};
+      \node[font=\tiny] at (-3.05,-2.30) {4 values $(x_1,y_1,x_2,y_2)$};
+      \foreach \x in {-3.45,-3.18,-2.91,-2.64}
+      \node[draw=utecblue!75, fill=utecblue!20, minimum width=0.19cm, minimum height=0.19cm] at (\x,-1.98) {};
+
+      \node[greenpanel, minimum width=2.55cm, minimum height=4.95cm] (classbranch) at (-0.20,0.00) {};
+      \node[font=\tiny\bfseries, text=green!55!black] at (-0.20,2.12) {Class Branch};
+      \node[layergreen] (cconv1) at (-0.20,1.58) {Conv 3x3};
+      \node[layergreen] (cconv2) at (-0.20,0.82) {Conv 3x3};
+      \node[layergreen, minimum height=0.50cm] (cls) at (-0.20,-0.10) {Conv2d\\nc};
+      \node[layergreen] (sig) at (-0.20,-0.88) {Sigmoid};
+      \node[font=\tiny] at (-0.20,-2.30) {nc scores};
+      \foreach \x in {-0.74,-0.47,-0.20,0.07,0.34}
+      \node[draw=green!55!black, fill=green!20, minimum width=0.19cm, minimum height=0.19cm] at (\x,-1.68) {};
+
+      \draw[arr] (bconv1) -- (bconv2);
+      \draw[arr] (bconv2) -- (bbox);
+      \draw[arr] (bbox) -- (dfl);
+      \draw[arr] (dfl) -- (decode);
+      \draw[arr] (decode) -- ++(0,-0.23);
+      \draw[arr] (cconv1) -- (cconv2);
+      \draw[arr] (cconv2) -- (cls);
+      \draw[arr] (cls) -- (sig);
+      \draw[arr] (sig) -- ++(0,-0.50);
+
+      \draw[arrblue] (p3in.east) -- ++(0.55,0) |- (head.west);
+      \draw[arrgreen] (p4in.east) -- ++(0.45,0) |- (head.west);
+      \draw[arrpurple] (p5in.east) -- ++(0.35,0) |- (head.west);
+
+      % Outputs by scale
+      \node[font=\scriptsize\bfseries, text=utecblue!90] at (3.00,3.05) {Output per scale};
+
+      \node[panel, minimum width=1.90cm, minimum height=1.55cm] (p3out) at (3.00,1.85) {};
+      \node[font=\scriptsize\bfseries, text=utecblue!90] at (3.00,2.38) {P3 output};
+      \node[font=\tiny, align=center] at (3.00,2.10) {$80{\times}80{\times}(4{+}nc)$};
+      \draw[step=0.13cm, utecblue!55, line width=0.25pt] (2.60,1.36) grid (3.40,1.90);
+      \node[font=\tiny] at (2.43,1.62) {80};
+      \node[font=\tiny] at (3.00,1.17) {80};
+      \node[font=\tiny] at (3.00,0.97) {$(4+nc)$};
+
+      \node[greenpanel, minimum width=1.90cm, minimum height=1.55cm] (p4out) at (3.00,-0.25) {};
+      \node[font=\scriptsize\bfseries, text=green!55!black] at (3.00,0.28) {P4 output};
+      \node[font=\tiny, align=center] at (3.00,0.00) {$40{\times}40{\times}(4{+}nc)$};
+      \draw[step=0.13cm, green!55!black!50, line width=0.25pt] (2.60,-0.74) grid (3.40,-0.20);
+      \node[font=\tiny] at (2.43,-0.48) {40};
+      \node[font=\tiny] at (3.00,-0.94) {40};
+      \node[font=\tiny] at (3.00,-1.14) {$(4+nc)$};
+
+      \node[purplepanel, minimum width=1.90cm, minimum height=1.55cm] (p5out) at (3.00,-2.35) {};
+      \node[font=\scriptsize\bfseries, text=purple!75] at (3.00,-1.82) {P5 output};
+      \node[font=\tiny, align=center] at (3.00,-2.10) {$20{\times}20{\times}(4{+}nc)$};
+      \draw[step=0.13cm, purple!60, line width=0.25pt] (2.60,-2.84) grid (3.40,-2.30);
+      \node[font=\tiny] at (2.43,-2.58) {20};
+      \node[font=\tiny] at (3.00,-3.04) {20};
+      \node[font=\tiny] at (3.00,-3.24) {$(4+nc)$};
+
+      \draw[arrblue] (1.35,1.85) -- (p3out.west);
+      \draw[arrgreen] (1.35,-0.25) -- (p4out.west);
+      \draw[arrpurple] (1.35,-2.35) -- (p5out.west);
+
+      % Combination
+      \node[font=\scriptsize\bfseries, text=utecblue!90, align=center] at (5.45,3.05)
+      {Combination\\(P3, P4, P5)};
+      \node[panel, minimum width=1.45cm, minimum height=3.80cm] (combo) at (5.45,0.45) {};
+      \node[font=\tiny\bfseries, align=center] at (5.45,1.90) {Concat along\\spatial\\dimension};
+      \draw[step=0.13cm, utecblue!55, line width=0.25pt] (5.05,0.80) grid (5.85,1.35);
+      \draw[step=0.13cm, green!55!black!50, line width=0.25pt] (5.05,0.25) grid (5.85,0.80);
+      \draw[step=0.13cm, purple!60, line width=0.25pt] (5.05,-0.30) grid (5.85,0.25);
+      \node[font=\large\bfseries] at (5.45,-0.78) {$\cdots$};
+
+      \node[panel, minimum width=1.45cm, minimum height=0.90cm] (pred) at (5.45,-2.35) {};
+      \node[font=\tiny\bfseries, align=center] at (5.45,-2.35)
+      {Raw\\predictions\\$[x,y,w,h,$\\class scores$]$};
+
+      \draw[arrblue] (p3out.east) -- ++(0.35,0) |- (combo.west);
+      \draw[arrgreen] (p4out.east) -- ++(0.25,0) |- (combo.west);
+      \draw[arrpurple] (p5out.east) -- ++(0.15,0) |- (combo.west);
+      \draw[arr] (combo.south) -- (pred.north);
+    \end{tikzpicture}%
+  }
+\end{frame}
+

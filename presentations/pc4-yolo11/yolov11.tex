@@ -1,0 +1,186 @@
+\documentclass[aspectratio=169]{beamer}
+
+% ── Tema base ─────────────────────────────────────────────────────────────────
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+% ── Colores UTEC ──────────────────────────────────────────────────────────────
+\definecolor{utecblue}{RGB}{0,82,155}
+\definecolor{uteccyan}{RGB}{0,174,219}
+\definecolor{lightgray}{RGB}{245,245,245}
+
+\setbeamercolor{frametitle}{bg=utecblue, fg=white}
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{subtitle}{fg=uteccyan}
+\setbeamercolor{author}{fg=white}
+\setbeamercolor{institute}{fg=white!80}
+\setbeamercolor{date}{fg=white!70}
+
+\setbeamercolor{block title}{bg=utecblue, fg=white}
+\setbeamercolor{block body}{bg=utecblue!8, fg=black}
+\setbeamercolor{alertblock title}{bg=uteccyan!80!black, fg=white}
+\setbeamercolor{alertblock body}{bg=uteccyan!12, fg=black}
+
+\setbeamercolor{itemize item}{fg=utecblue}
+\setbeamercolor{itemize subitem}{fg=uteccyan}
+\setbeamertemplate{itemize item}{\small$\blacktriangleright$}
+\setbeamertemplate{itemize subitem}{\small$\triangleright$}
+
+\setbeamertemplate{footline}{%
+  \hfill\usebeamerfont{footline}\insertframenumber\,/\,\inserttotalframenumber\hspace{1em}\vspace{0.4em}
+}
+
+\setbeamercolor{background canvas}{bg=white}
+
+% ── Paquetes ──────────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{pgfplots}
+\usepackage{xcolor}
+\usepackage{url}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta, shapes.geometric, positioning, fit, backgrounds}
+
+% ── Comando para placeholder de imagen/video ──────────────────────────────────
+\newcommand{\imgplaceholder}[2][8cm]{%
+  \begin{tikzpicture}
+    \node[draw=utecblue!40, dashed, fill=utecblue!5,
+          minimum width=#1, minimum height=4cm,
+          font=\small\color{utecblue!70}, align=center,
+          rounded corners=4pt] {#2};
+  \end{tikzpicture}%
+}
+
+% ── Metadatos ─────────────────────────────────────────────────────────────────
+\title{Multi-Object Tracking in UAV Imagery}
+\subtitle{Method 1 (Baseline): YOLOv11 + SORT}
+\author{Rensso Victor Hugo Mora Colque}
+\institute{Computer Vision --- UTEC}
+\date{2026-I}
+
+% =============================================================================
+\begin{document}
+% =============================================================================
+
+% ── SLIDE 1: PORTADA ──────────────────────────────────────────────────────────
+{
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}[plain]
+  \vspace{1.2cm}
+  \centering
+  {\color{utecblue}\Large\bfseries Method 1 (Baseline): YOLOv11 + SORT\par}
+  \vspace{0.4em}
+  \color{utecblue!50}\rule{0.5\textwidth}{0.4pt}\par
+  \vspace{0.8em}
+  {\color{utecblue!80}\small Computer Vision --- UTEC\par}
+  {\color{utecblue!80}\small PC4: Detection and Tracking\par}
+  \vspace{0.4em}
+  {\color{utecblue!70}\small Rensso Victor Hugo Mora Colque\par}
+  {\color{utecblue!60}\small 2026-I\par}
+\end{frame}
+}
+
+% ── CONTENIDO MODULAR ─────────────────────────────────────────────────────
+
+\input{sections/02_yolov11_architecture.tex}
+\input{sections/03_yolov11_conv_batchnorm_silu_block.tex}
+\input{sections/04_yolov11_bottle_neck_block.tex}
+\input{sections/05_yolov11_c3k2_block.tex}
+\input{sections/06_yolov11_backbone_step.tex}
+\input{sections/07_yolov11_spatial_pyramid_pooling_fast.tex}
+\input{sections/08_yolov11_cross_stage_partial_self_attention.tex}
+\input{sections/09_yolov11_neck_step.tex}
+\input{sections/10_yolov11_detection_head_step.tex}
+\input{sections/11_yolov11_distribution_focal_loss_and_decode_box.tex}
+\input{sections/12_yolov11_postprocessing_and_nms.tex}
+\input{sections/13_sort_simple_online_and_realtime_tracking.tex}
+\input{sections/14_sort_kalman_filter_for_motion_prediction.tex}
+\input{sections/15_sort_hungarian_assignment_and_track_lifecycle.tex}
+\input{sections/16_full_pipeline_yolov11_sort.tex}
+\input{sections/17_qualitative_demo_success_case_track_continuity.tex}
+\input{sections/18_qualitative_demo_failure_case_id_switch.tex}
+
+% ── SLIDE 19: REFERENCIAS ─────────────────────────────────────────────────────
+\begin{frame}[allowframebreaks]{References}
+  \footnotesize
+  \begin{thebibliography}{9}
+
+    \bibitem{zhu2022visdrone}
+    P.~Zhu, L.~Wen, D.~Du, X.~Bian, H.~Fan, Q.~Hu, and H.~Ling,
+    ``Detection and Tracking Meet Drones Challenge,''
+    \textit{IEEE Transactions on Pattern Analysis and Machine Intelligence},
+    vol.~44, no.~11, pp.~7380--7399, Nov.~2022.
+    DOI: 10.1109/TPAMI.2021.3119563.
+
+    \bibitem{bewley2016sort}
+    A.~Bewley, Z.~Ge, L.~Ott, F.~Ramos, and B.~Upcroft,
+    ``Simple Online and Realtime Tracking,''
+    in \textit{Proc. IEEE Int. Conf. Image Processing (ICIP)},
+    Phoenix, AZ, Sep.~2016, pp.~3464--3468.
+    DOI: 10.1109/ICIP.2016.7533003.
+
+    \bibitem{lin2014coco}
+    T.-Y.~Lin, M.~Maire, S.~Belongie, J.~Hays, P.~Perona, D.~Ramanan,
+    P.~Dollár, and C.~L.~Zitnick,
+    ``Microsoft COCO: Common Objects in Context,''
+    in \textit{Proc. European Conf. Computer Vision (ECCV)},
+    Zurich, Switzerland, Sep.~2014, pp.~740--755.
+    DOI: 10.1007/978-3-319-10602-1\_48.
+
+    \bibitem{ultralytics2024yolo11}
+    Ultralytics,
+    ``YOLOv11: A Leap Forward in Real-Time Object Detection,''
+    \textit{Ultralytics Documentation}, 2024.
+      [Online]. Available: \url{https://docs.ultralytics.com/models/yolo11/}
+
+    \bibitem{kalman1960}
+    R.~E.~Kalman,
+    ``A New Approach to Linear Filtering and Prediction Problems,''
+    \textit{Journal of Basic Engineering},
+    vol.~82, no.~1, pp.~35--45, Mar.~1960.
+    DOI: 10.1115/1.3662552.
+
+    \bibitem{kuhn1955hungarian}
+    H.~W.~Kuhn,
+    ``The Hungarian Method for the Assignment Problem,''
+    \textit{Naval Research Logistics Quarterly},
+    vol.~2, no.~1--2, pp.~83--97, 1955.
+    DOI: 10.1002/nav.3800020109.
+
+    \bibitem{wojke2017deepsort}
+    N.~Wojke, A.~Bewley, and D.~Paulus,
+    ``Simple Online and Realtime Tracking with a Deep Association Metric,''
+    in \textit{Proc. IEEE Int. Conf. Image Processing (ICIP)},
+    Beijing, China, Sep.~2017, pp.~3645--3649.
+    DOI: 10.1109/ICIP.2017.8296962.
+
+    \bibitem{aharon2022botsort}
+    N.~Aharon, R.~Orfaig, and B.-Z.~Bobrovsky,
+    ``BoT-SORT: Robust Associations Multi-Pedestrian Tracking,''
+    \textit{arXiv preprint arXiv:2206.14651}, Jun.~2022.
+      [Online]. Available: \url{https://arxiv.org/abs/2206.14651}
+
+    \bibitem{akbari2022sahi}
+    O.~F.~Cengiz, F.~Akyon, E.~Altinuc, and A.~Tekin,
+    ``Slicing Aided Hyper Inference and Fine-tuning for
+    Small Object Detection,''
+    in \textit{Proc. IEEE Int. Conf. Image Processing (ICIP)},
+    Bordeaux, France, Oct.~2022, pp.~966--970.
+    DOI: 10.1109/ICIP46576.2022.9897990.
+
+  \end{thebibliography}
+\end{frame}
+
+\input{sections/20_cierre.tex}
+
+\end{document}

@@ -1,0 +1,151 @@
+% ── SLIDE 11: DFL + Decode Box ──────────────────────────────────────────────
+\begin{frame}{YOLOv11: Distribution Focal Loss and Decode Box}
+  \centering
+  \vspace{-0.15cm}
+  \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        panel/.style={
+            draw=purple!65,
+            fill=purple!4,
+            rounded corners=5pt,
+            line width=0.8pt
+          },
+        orangepanel/.style={
+            draw=orange!80!black,
+            fill=orange!5,
+            rounded corners=5pt,
+            line width=0.8pt
+          },
+        box/.style={
+            draw=purple!65,
+            fill=white,
+            rounded corners=4pt,
+            line width=0.7pt,
+            minimum height=0.62cm,
+            font=\scriptsize,
+            align=center
+          },
+        orangebox/.style={
+            draw=orange!80!black,
+            fill=white,
+            rounded corners=4pt,
+            line width=0.7pt,
+            minimum height=0.62cm,
+            font=\scriptsize,
+            align=center
+          },
+        arr/.style={-{Stealth[length=4pt]}, black!80, line width=0.8pt},
+        parr/.style={-{Stealth[length=4pt]}, purple!75, line width=0.8pt},
+        oarr/.style={-{Stealth[length=4pt]}, orange!80!black, line width=0.8pt}
+      ]
+      % DFL panel
+      \node[panel, minimum width=14.5cm, minimum height=3.5cm] at (0,1.65) {};
+      \node[font=\large\bfseries, text=purple!75] at (0,2.88) {DFL (Distribution Focal Loss)};
+
+      \node[box, minimum width=3.85cm, minimum height=1.65cm] (bins) at (-5.05,1.55) {};
+      \node[font=\scriptsize\bfseries, text=purple!75] at (-5.05,2.12) {Example: left side};
+      \node[font=\tiny] at (-5.05,1.87) {$\mathrm{reg\_max}=16$};
+      \node[font=\tiny\bfseries] at (-5.05,1.48) {Bins (discrete distances)};
+      \node[font=\tiny] at (-6.25,1.18) {0};
+      \node[font=\tiny] at (-5.65,1.18) {1};
+      \node[font=\tiny] at (-5.05,1.18) {2};
+      \node[font=\tiny] at (-4.45,1.18) {3};
+      \node[font=\tiny] at (-3.95,1.18) {$\cdots$};
+      \node[font=\tiny] at (-3.45,1.18) {15};
+      \foreach \x in {-6.25,-5.65,-5.05,-4.45,-3.45}
+      \node[draw=purple!65, fill=purple!20, minimum width=0.28cm, minimum height=0.22cm] at (\x,0.95) {};
+
+      \node[font=\tiny\bfseries] at (-2.75,1.52) {Softmax};
+      \draw[arr] (-2.60,1.52) -- (-2.20,1.52);
+
+      \node[box, minimum width=2.35cm, minimum height=1.95cm] (prob) at (-0.95,1.55) {};
+      \node[font=\scriptsize\bfseries, text=purple!75] at (-1,2.2) {Probabilities};
+      \draw[black!35, line width=0.3pt] (-1.85,0.93) -- (0.05,0.93);
+      \foreach \x/\h in {
+          -1.75/0.38,
+          -1.55/0.70,
+          -1.35/0.48,
+          -1.15/0.56,
+          -0.95/0.82,
+          -0.75/0.34,
+          -0.55/0.52,
+          -0.35/0.22,
+          -0.15/0.48
+        }
+      \draw[purple!65, fill=purple!25, line width=0.5pt] (\x,0.93) rectangle ++(0.09,\h);
+      \node[font=\tiny] at (-1.75,0.72) {0};
+      \node[font=\tiny] at (-1.35,0.72) {1};
+      \node[font=\tiny] at (-0.95,0.72) {2};
+      \node[font=\tiny] at (-0.55,0.72) {3};
+      \node[font=\tiny] at (-0.15,0.72) {15};
+
+      \draw[arr] (0.35,1.52) -- (0.75,1.52);
+
+      \node[box, minimum width=3.25cm, minimum height=1.70cm] (expect) at (2.50,1.55) {};
+      \node[font=\scriptsize\bfseries, text=purple!75] at (2.50,2.12) {DFL expectation};
+      \node[font=\small] at (2.50,1.52) {$d_{\mathrm{left}}=\sum_{i=0}^{16-1}P_i\cdot i$};
+
+      \draw[arr] (4.2,1.52) -- (4.6,1.52);
+
+      \node[box, minimum width=2cm, minimum height=2.25cm] (dflout) at (5.65,1.55) {};
+      \node[font=\scriptsize\bfseries, text=purple!75] at (5.65,2.3) {DFL output};
+      \node[font=\tiny] at (5.65,2.02) {(4 distances)};
+      \node[font=\scriptsize\bfseries] at (5.65,1.65) {$l$};
+      \node[font=\scriptsize\bfseries] at (5.65,1.35) {$t$};
+      \node[font=\scriptsize\bfseries] at (5.65,1.05) {$r$};
+      \node[font=\scriptsize\bfseries] at (5.65,0.75) {$b$};
+      \foreach \y in {
+          1.65,
+          1.35,
+          1.05,
+          0.75
+        }
+      \node[draw=purple!65, fill=purple!20, minimum width=0.18cm, minimum height=0.18cm] at (5.25,\y) {};
+
+      \draw[parr] (-3,0.35) -- (3.55,0.35);
+      \node[font=\scriptsize\bfseries] at (-0.30,0.12) {Applied independently to left, top, right, bottom};
+
+      % Decode panel
+      \begin{scope}[yshift=-0.42cm]
+        \node[orangepanel, minimum width=14.5cm, minimum height=3cm] at (0,-1.65) {};
+        \node[font=\large\bfseries, text=orange!80!black] at (0,-0.55) {Decode Box (per cell)};
+
+        \node[orangebox, minimum width=4.75cm, minimum height=1.65cm] (inputs) at (-4.15,-1.70) {};
+        \node[font=\scriptsize\bfseries] at (-4.35,-1.05) {Inputs};
+        \node[font=\scriptsize\bfseries] at (-5.20,-1.30) {Anchor};
+        \node[font=\tiny] at (-5.20,-1.52) {$(x_a,y_a)$};
+        \draw[step=0.22cm, black!35, line width=0.25pt] (-5.68,-2.32) grid (-4.72,-1.72);
+        \fill[black] (-5.20,-2.02) circle (1.2pt);
+        \node[font=\scriptsize\bfseries] at (-3.55,-1.30) {Distances};
+        \node[font=\tiny] at (-3.55,-1.52) {$(l,t,r,b)$};
+        \draw[oarr] (-3.55,-2.02) -- (-3.55,-1.55);
+        \draw[red!75, -{Stealth[length=4pt]}, line width=0.8pt] (-3.55,-2.02) -- (-4.10,-2.02);
+        \draw[green!60!black, -{Stealth[length=4pt]}, line width=0.8pt] (-3.55,-2.02) -- (-3.05,-2.02);
+        \draw[blue!75, -{Stealth[length=4pt]}, line width=0.8pt] (-3.55,-2.02) -- (-3.55,-2.55);
+        \fill[black] (-3.55,-2.02) circle (1.2pt);
+        \node[font=\tiny, text=orange!80!black] at (-3.44,-1.70) {$t$};
+        \node[font=\tiny, text=red!75] at (-3.95,-1.83) {$l$};
+        \node[font=\tiny, text=green!60!black] at (-3.15,-1.83) {$r$};
+        \node[font=\tiny, text=blue!75] at (-3.44,-2.38) {$b$};
+
+        \node[orangebox, minimum width=2.50cm, minimum height=1.75cm] at (0.10,-1.88) {};
+        \node[font=\scriptsize\bfseries] at (0.10,-1.05) {Formulas};
+        \node[font=\tiny, align=left] at (0.10,-1.88)
+        {$x_1=x_a-l$\\[0.08em]$y_1=y_a-t$\\[0.08em]$x_2=x_a+r$\\[0.08em]$y_2=y_a+b$};
+        \draw[arr] (1.50,-1.88) -- (2.55,-1.88);
+
+        \node[orangebox, minimum width=2.75cm, minimum height=1.85cm] (outbox) at (4.05,-1.75) {};
+        \node[font=\scriptsize\bfseries] at (4.05,-1.02) {Output};
+        \node[font=\scriptsize\bfseries] at (4.05,-1.28) {$(x_1,y_1,x_2,y_2)$};
+        \draw[step=0.20cm, black!30, line width=0.25pt] (3.33,-2.45) grid (4.77,-1.55);
+        \draw[purple!70, line width=0.9pt] (3.65,-2.20) rectangle (4.47,-1.76);
+        \fill[orange] (3.65,-1.76) circle (1.5pt);
+        \fill[green!60!black] (4.47,-1.76) circle (1.5pt);
+        \fill[red] (3.65,-2.20) circle (1.5pt);
+        \fill[blue] (4.47,-2.20) circle (1.5pt);
+        \fill[black] (4.05,-2.02) circle (1.1pt);
+      \end{scope}
+    \end{tikzpicture}%
+  }
+\end{frame}
+

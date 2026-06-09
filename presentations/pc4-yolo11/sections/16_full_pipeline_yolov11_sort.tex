@@ -1,0 +1,57 @@
+% ── SLIDE 10: PIPELINE COMPLETO ───────────────────────────────────────────────
+\begin{frame}{Full Pipeline: YOLOv11 + SORT}
+  \centering
+  \vspace{-0.2cm}
+  \resizebox{0.92\textwidth}{!}{%
+    \begin{tikzpicture}[
+        box/.style={draw=utecblue, fill=utecblue!8, rounded corners=4pt,
+            minimum width=2.3cm, minimum height=0.7cm,
+            font=\scriptsize, align=center},
+        dbox/.style={draw=uteccyan, fill=uteccyan!10, rounded corners=4pt,
+            minimum width=2.3cm, minimum height=0.7cm,
+            font=\scriptsize, align=center},
+        arr/.style={-{Stealth[length=5pt]}, utecblue!80, thick},
+        note/.style={font=\tiny, text=utecblue!70, align=center}
+      ]
+      \node[box]  (fr)   {JPEG frame $t$};
+      \node[box,  right=0.6cm of fr]  (yolo) {YOLOv11\\{\tiny GPU, 1280px}};
+      \node[box,  right=0.6cm of yolo](filt) {Filter\\{\tiny person+car}};
+      \node[box,  right=0.6cm of filt](map)  {Class map\\{\tiny COCO$\to$VD}};
+      \node[dbox, below=0.6cm of map] (sp)   {SORT\textsubscript{ped}\\{\tiny class 1}};
+      \node[dbox, above=0.6cm of map] (sc)   {SORT\textsubscript{car}\\{\tiny class 4}};
+      \node[box,  right=0.6cm of map] (merge){Merge\\{\tiny ID offset}};
+      \node[box,  right=0.6cm of merge](mot) {MOT .txt\\{\tiny results}};
+      \node[box,  below=0.6cm of mot] (eval) {motmetrics\\{\tiny MOTA/IDF1}};
+
+      \draw[arr] (fr)   -- (yolo);
+      \draw[arr] (yolo) -- (filt);
+      \draw[arr] (filt) -- (map);
+      \draw[arr] (map.south) -- (sp.north);
+      \draw[arr] (map.north) -- (sc.south);
+      \draw[arr] (sp.east)   -| (merge.south);
+      \draw[arr] (sc.east)   -| (merge.north);
+      \draw[arr] (merge) -- (mot);
+      \draw[arr] (mot.south) -- (eval.north);
+    \end{tikzpicture}
+  }
+
+  \vspace{0.4em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Key design choice}
+        \small Separate SORT trackers per class.
+        Car IDs offset by $+100\,000$ to prevent
+        ID collision across classes in the output file.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Output format (MOT standard)}
+        \scriptsize
+        \texttt{frame, id, x, y, w, h, conf, class, vis}\\
+        One line per detection per frame.
+        Sorted by \texttt{(frame, id)}.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+

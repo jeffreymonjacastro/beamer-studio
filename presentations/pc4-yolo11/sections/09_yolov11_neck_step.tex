@@ -1,0 +1,117 @@
+% ── SLIDE 9: Neck ──────────────────────────────────────────────
+\begin{frame}{YOLOv11: Neck Step}
+  \centering
+  \vspace{-0.15cm}
+  \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        outer/.style={
+            draw=utecblue!85,
+            fill=utecblue!5,
+            rounded corners=13pt,
+            line width=1.1pt
+          },
+        block/.style={
+            draw=utecblue!85,
+            fill=white,
+            rounded corners=5pt,
+            line width=0.9pt,
+            minimum width=1.75cm,
+            minimum height=0.50cm,
+            font=\scriptsize\bfseries,
+            align=center
+          },
+        neckblock/.style={
+            draw=utecblue!85,
+            fill=white,
+            rounded corners=5pt,
+            line width=0.9pt,
+            minimum width=1.70cm,
+            minimum height=0.50cm,
+            font=\scriptsize\bfseries,
+            align=center
+          },
+        detect/.style={
+            draw=utecblue!85,
+            fill=white,
+            rounded corners=5pt,
+            line width=0.9pt,
+            minimum width=1.60cm,
+            minimum height=0.52cm,
+            font=\scriptsize\bfseries,
+            align=center
+          },
+        arr/.style={-{Stealth[length=4pt]}, utecblue!80, line width=0.95pt},
+        route/.style={-{Stealth[length=4pt]}, utecblue!80, line width=1.0pt}
+      ]
+      \node[outer, minimum width=2.40cm, minimum height=6.35cm] (backbone_box) at (-5.90,0) {};
+      \node[font=\Large\bfseries, text=utecblue!90] at (-5.90,2.72) {Backbone};
+      \node[block] (bb_cbs) at (-5.90,2.05) {CBS};
+      \node[block] (bb1) at (-5.90,1.10) {Backbone\\Block};
+      \node[block] (bb2) at (-5.90,0.05) {Backbone\\Block};
+      \node[block] (bb3) at (-5.90,-1.00) {Backbone\\Block};
+      \node[block] (bb4) at (-5.90,-2.05) {Backbone\\Block};
+
+      \draw[arr] (bb_cbs) -- (bb1);
+      \draw[arr] (bb1) -- (bb2);
+      \draw[arr] (bb2) -- (bb3);
+      \draw[arr] (bb3) -- (bb4);
+
+      \node[outer, minimum width=7.80cm, minimum height=6.45cm] (neck_box) at (0.00,0) {};
+      \node[font=\Large\bfseries, text=utecblue!90] at (-3.05,2.55) {Neck};
+
+      \node[neckblock] (sppf) at (-2.55,-1.55) {SPPF};
+      \node[neckblock] (c2psa) at (-2.55,-2.35) {C2PSA};
+
+      \node[neckblock] (up1) at (-0.30,-1.55) {Upsample};
+      \node[neckblock] (concat1) at (-0.30,-0.72) {Concat};
+      \node[neckblock] (c3k2_1) at (-0.30,0.11) {C3K2};
+      \node[neckblock] (up2) at (-0.30,0.94) {Upsample};
+      \node[neckblock] (concat2) at (-0.30,1.77) {Concat};
+      \node[neckblock] (c3k2_2) at (-0.30,2.60) {C3K2};
+
+      \node[neckblock] (r_cbs1) at (2.30,2.05) {CBS};
+      \node[neckblock] (r_concat1) at (2.30,1.22) {Concat};
+      \node[neckblock] (r_c3k2_1) at (2.30,0.39) {C3K2};
+      \node[neckblock] (r_cbs2) at (2.30,-0.44) {CBS};
+      \node[neckblock] (r_concat2) at (2.30,-1.35) {Concat};
+      \node[neckblock] (r_c3k2_2) at (2.30,-2.18) {C3K2};
+
+      \node[outer, minimum width=2.25cm, minimum height=6.35cm] (head_box) at (5.45,0) {};
+      \node[font=\Large\bfseries, text=utecblue!90] at (5.45,2.62) {Head};
+      \node[detect] (d3) at (5.45,1.33) {Detect};
+      \node[detect] (d4) at (5.45,-0.48) {Detect};
+      \node[detect] (d5) at (5.45,-2.20) {Detect};
+
+      \draw[arr] (sppf) -- (c2psa);
+      \draw[route] (c2psa.east) -- ++(0.55,0) -- ++(0,0.80) -- (up1.west);
+      \draw[arr] (up1) -- (concat1);
+      \draw[arr] (concat1) -- (c3k2_1);
+      \draw[arr] (c3k2_1) -- (up2);
+      \draw[arr] (up2) -- (concat2);
+      \draw[arr] (concat2) -- (c3k2_2);
+
+      \draw[route] (c3k2_2.east) -- ++(0.60,0) -- ++(0,0.55) -| (r_cbs1.north);
+      \draw[arr] (r_cbs1) -- (r_concat1);
+      \draw[arr] (r_concat1) -- (r_c3k2_1);
+      \draw[arr] (r_c3k2_1) -- (r_cbs2);
+      \draw[arr] (r_cbs2) -- (r_concat2);
+      \draw[arr] (r_concat2) -- (r_c3k2_2);
+
+      \draw[route] (bb2.east) -- node[above,font=\tiny\bfseries,text=utecblue!85] {80x80} ++(1.45,0) |- (concat2.west);
+      \draw[route] (bb3.east) -- node[above,font=\tiny\bfseries,text=utecblue!85] {40x40} ++(1.45,0) |- (concat1.west);
+      \draw[route] (bb4.east) -- node[above,font=\tiny\bfseries,text=utecblue!85] {20x20} ++(1.45,0) |- (sppf.west);
+
+      \draw[route] (c2psa.south) -- ++(0,-0.30) -- (1.15,-2.95) -- (1.15,-1.35) -- (r_concat2.west);
+      \draw[route] (c3k2_1.east) -- ++(0.65,0) -- ++(0,1.11) -- (r_concat1.west);
+
+      \node[font=\scriptsize\bfseries, text=utecblue!90, align=center] at (4.15,1.92) {P3/8\\[-1pt]\tiny 80x80};
+      \node[font=\scriptsize\bfseries, text=utecblue!90, align=center] at (4.15,0.06) {P4/16\\[-1pt]\tiny 40x40};
+      \node[font=\scriptsize\bfseries, text=utecblue!90, align=center] at (4.15,-1.72) {P5/32\\[-1pt]\tiny 20x20};
+
+      \draw[route] (c3k2_2.north) -- ++(0,0.42) -- (3.65,3.23) -- (3.65,1.33) -- (d3.west);
+      \draw[route] (r_c3k2_1.east) -- ++(0.45,0) -- ++(0,-0.87) -- (d4.west);
+      \draw[route] (r_c3k2_2.east) -- ++(0.45,0) -- (d5.west);
+    \end{tikzpicture}%
+  }
+\end{frame}
+

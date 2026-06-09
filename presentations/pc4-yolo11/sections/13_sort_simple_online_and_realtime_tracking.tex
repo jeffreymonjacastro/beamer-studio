@@ -1,0 +1,48 @@
+% ── SLIDE 13: SORT VISIÓN GENERAL ──────────────────────────────────────────────
+\begin{frame}{SORT: Simple Online and Realtime Tracking}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \textbf{Bewley et al., ICIP 2016 \cite{bewley2016sort}:}
+      \begin{itemize}
+        \item Tracking-by-detection paradigm: tracker receives
+              bboxes from the detector, does not re-detect
+        \item \textbf{No visual appearance features} --- purely geometric
+        \item Two classical components:
+              \begin{itemize}
+                \item \textbf{Kalman Filter}: motion prediction
+                \item \textbf{Hungarian Algorithm}: optimal assignment
+              \end{itemize}
+        \item Achieves $>\!260$ FPS on tracking alone
+      \end{itemize}
+      \vspace{0.3em}
+      \begin{alertblock}{Why SORT as baseline?}
+        \small Has limitations in long occlusion, appearance ambiguity, tiny objects.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \vspace{0.2cm}
+      \resizebox{\linewidth}{!}{%
+        \begin{tikzpicture}[
+            box/.style={draw=utecblue, fill=utecblue!10, rounded corners=3pt,
+                minimum width=3.0cm, minimum height=0.55cm,
+                font=\scriptsize, align=center},
+            arr/.style={-{Stealth[length=5pt]}, utecblue!70, thick}
+          ]
+          \node[box] (det)  {Detections $\{b_i^t\}$};
+          \node[box, below=0.22cm of det]  (pred) {(1) Kalman Predict};
+          \node[box, below=0.22cm of pred] (iou)  {(2) IoU Cost Matrix};
+          \node[box, below=0.22cm of iou]  (hung) {(3) Hungarian Assignment};
+          \node[box, below=0.22cm of hung] (upd)  {(4) Update / Create / Delete};
+          \node[box, below=0.22cm of upd, fill=uteccyan!15, draw=uteccyan]
+          (out)  {Tracks $\{\tau_k^t\}$};
+          \draw[arr] (det)  -- (pred);
+          \draw[arr] (pred) -- (iou);
+          \draw[arr] (iou)  -- (hung);
+          \draw[arr] (hung) -- (upd);
+          \draw[arr] (upd)  -- (out);
+        \end{tikzpicture}%
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+

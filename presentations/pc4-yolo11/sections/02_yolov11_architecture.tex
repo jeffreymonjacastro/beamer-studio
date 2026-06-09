@@ -1,0 +1,46 @@
+% ── SLIDE 2: YOLO VISIÓN GENERAL ──────────────────────────────────────────────
+\begin{frame}{YOLOv11 Architecture}
+  \centering
+  \vspace{0.2cm}
+  \begin{tikzpicture}[
+      module/.style={
+          draw=utecblue!85,
+          fill=utecblue!6,
+          rounded corners=13pt,
+          line width=1.2pt,
+          minimum width=2.05cm,
+          minimum height=4.25cm,
+          font=\large\bfseries,
+          align=center
+        },
+      sidebox/.style={
+          draw=utecblue!85,
+          fill=uteccyan!8,
+          rounded corners=10pt,
+          line width=1.1pt,
+          minimum width=2.05cm,
+          minimum height=1.15cm,
+          font=\normalsize\bfseries,
+          align=center
+        },
+      flow/.style={-{Stealth[length=6pt]}, utecblue!70, line width=1.0pt},
+      label/.style={font=\Large\bfseries, text=utecblue!85}
+    ]
+    \node[label] (train) at (-5.65, 1.25) {Train};
+    \node[label] (predict) at (-5.65,-1.55) {Predict};
+
+    \node[module] (backbone) at (-3.75,0) {Backbone};
+    \node[module] (neck) at (-0.95,0) {Neck};
+    \node[module] (head) at (1.85,0) {Detection\\Head};
+
+    \node[sidebox] (loss) at (4.85,1.75) {Loss \&\\Backprop};
+    \node[sidebox] (nms) at (4.85,-1.75) {NMS};
+
+    \draw[flow] (backbone) -- (neck);
+    \draw[flow] (neck) -- (head);
+    \draw[utecblue!70, line width=1.0pt] (head.east) -- ++(0.65,0) coordinate (split);
+    \draw[flow] (split) |- (loss.west);
+    \draw[flow] (split) |- (nms.west);
+  \end{tikzpicture}
+\end{frame}
+

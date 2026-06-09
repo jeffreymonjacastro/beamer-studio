@@ -1,0 +1,108 @@
+% ── SLIDE 12: Postprocesing and NMS ──────────────────────────────────────────────────
+\begin{frame}{YOLOv11: Postprocessing and NMS}
+  \centering
+  \vspace{-0.15cm}
+  \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        cardblue/.style={draw=blue!75, fill=blue!4, rounded corners=5pt, line width=0.9pt, minimum width=2.85cm, minimum height=7.35cm},
+        cardgreen/.style={draw=green!75, fill=green!4, rounded corners=5pt, line width=0.9pt, minimum width=2.85cm, minimum height=7.35cm},
+        cardorange/.style={draw=orange!85!black, fill=orange!4, rounded corners=5pt, line width=0.9pt, minimum width=2.85cm, minimum height=7.35cm},
+        cardpurple/.style={draw=purple!75, fill=purple!4, rounded corners=5pt, line width=0.9pt, minimum width=2.85cm, minimum height=7.35cm},
+        cardred/.style={draw=red!75, fill=red!4, rounded corners=5pt, line width=0.9pt, minimum width=2.85cm, minimum height=7.35cm},
+        title/.style={font=\fontsize{5.8}{6.2}\selectfont\bfseries, align=center},
+        body/.style={font=\tiny\bfseries, align=center, text=black!85},
+        miniblue/.style={draw=blue!80, fill=blue!9, line width=0.7pt},
+        minigreen/.style={draw=green!80, fill=green!9, line width=0.7pt},
+        keepblue/.style={draw=blue!90, fill=blue!12, line width=0.7pt},
+        keepgreen/.style={draw=green!90, fill=green!12, line width=0.7pt},
+        keeppurple/.style={draw=purple!90, fill=purple!12, line width=0.7pt},
+        keepred/.style={draw=red!90, fill=red!12, line width=0.7pt},
+        flow/.style={-{Stealth[length=4pt]}, black!75, line width=0.9pt}
+      ]
+      % 1 confidence
+      \node[cardblue] (c1) at (-5.75,0) {};
+      \node[title, text=blue!80!black] at (-5.75,3.05) {CONFIDENCE\\THRESHOLD};
+      \draw[blue!70] (-6.65,2.62) -- (-4.85,2.62);
+      \node[body] at (-5.75,1.80) {Remove boxes with\\confidence score\\below threshold.};
+      \draw[blue!35, dashed] (-6.70,0.85) -- (-4.80,0.85);
+      \node[body] at (-5.75,0.58) {Before};
+      \foreach \x/\y/\w/\h in {-6.35/-0.55/0.42/0.30,-6.05/-0.28/0.34/0.48,-5.70/-0.72/0.36/0.40,-5.35/-0.38/0.34/0.42,-5.00/-0.62/0.46/0.34,-5.95/-0.70/0.30/0.35,-5.45/-0.85/0.35/0.30}
+      \draw[miniblue, opacity=0.65] (\x,\y) rectangle ++(\w,\h);
+      \draw[blue!75, -{Stealth[length=5pt]}, line width=1.2pt] (-5.75,-1.15) -- (-5.75,-1.55);
+      \node[body] at (-5.75,-1.85) {After};
+      \foreach \x/\y/\w/\h in {-6.25/-2.35/0.30/0.24,-5.75/-2.55/0.34/0.26,-5.05/-2.30/0.42/0.25}
+      \draw[keepblue] (\x,\y) rectangle ++(\w,\h);
+
+      % 2 class filter
+      \node[cardgreen] (c2) at (-2.85,0) {};
+      \node[title, text=green!55!black] at (-2.85,3.05) {CLASS FILTER};
+      \draw[green!55!black] (-3.75,2.62) -- (-1.95,2.62);
+      \node[body] at (-2.85,1.80) {Remove boxes whose\\class is not in the\\selected classes.};
+      \draw[green!45, dashed] (-3.80,0.85) -- (-1.90,0.85);
+      \node[body] at (-2.85,0.58) {Before};
+      \foreach \x/\y in {-3.45/-0.45,-3.05/-0.75,-2.60/-0.40,-2.15/-0.70}
+      \draw[minigreen] (\x,\y) rectangle ++(0.35,0.30);
+      \foreach \x/\y in {-3.60/-0.80,-2.90/-0.45,-2.40/-0.85,-2.05/-0.35}
+      \draw[red!60, fill=red!5, line width=0.6pt] (\x,\y) rectangle ++(0.35,0.30);
+      \draw[green!65!black, -{Stealth[length=5pt]}, line width=1.2pt] (-2.85,-1.15) -- (-2.85,-1.55);
+      \node[body] at (-2.85,-1.85) {After};
+      \foreach \x/\y in {-3.35/-2.30,-2.75/-2.55,-2.15/-2.30}
+      \draw[keepgreen] (\x,\y) rectangle ++(0.35,0.28);
+
+      % 3 sorting
+      \node[cardorange] (c3) at (0.05,0) {};
+      \node[title, text=orange!90!black] at (0.05,3.05) {SORTING BY SCORE};
+      \draw[orange!80!black] (-0.85,2.62) -- (0.95,2.62);
+      \node[body] at (0.05,1.80) {Sort remaining boxes\\by confidence score\\in descending order.};
+      \draw[orange!45, dashed] (-0.90,0.85) -- (1.00,0.85);
+      \node[body] at (0.05,0.58) {Before (unsorted)};
+      \foreach \score/\y/\w in {0.38/-0.10/0.90,0.91/-0.42/0.70,0.45/-0.74/0.60,0.87/-1.06/0.80,0.62/-1.38/0.65}
+        {
+          \node[font=\tiny] at (-0.48,\y+0.08) {\score};
+          \draw[orange!85, fill=orange!8, line width=0.6pt] (-0.10,\y) rectangle ++(\w,0.18);
+        }
+      \draw[orange!90!black, -{Stealth[length=5pt]}, line width=1.2pt] (0.05,-1.62) -- (0.05,-1.95);
+      \node[body] at (0.05,-2.12) {After (sorted)};
+      \foreach \score/\y/\w in {0.91/-2.42/0.82,0.87/-2.70/0.76,0.62/-2.98/0.65,0.45/-3.26/0.55,0.38/-3.54/0.48}
+        {
+          \node[font=\tiny] at (-0.48,\y+0.08) {\score};
+          \draw[orange!85, fill=orange!8, line width=0.6pt] (-0.10,\y) rectangle ++(\w,0.18);
+        }
+
+      % 4 max limits
+      \node[cardpurple] (c4) at (2.95,0) {};
+      \node[title, text=purple!75] at (2.95,3.05) {MAX\_NMS / \\ MAX\_DET};
+      \draw[purple!70] (2.05,2.62) -- (3.85,2.62);
+      \node[body] at (2.95,1.80) {Limit maximum boxes\\before NMS and final\\detections after NMS.};
+      \draw[purple!40, dashed] (2.00,0.85) -- (3.90,0.85);
+      \node[body] at (2.95,0.58) {Before (many boxes)};
+      \foreach \y/\w in {-0.15/0.95,-0.43/0.82,-0.71/0.70,-0.99/0.90,-1.27/0.65}
+      \draw[purple!75, fill=purple!8, line width=0.6pt] (2.55,\y) rectangle ++(\w,0.18);
+      \node[font=\scriptsize\bfseries] at (2.95,-1.55) {$\cdots$};
+      \draw[purple!75, -{Stealth[length=5pt]}, line width=1.2pt] (2.95,-1.78) -- (2.95,-2.15);
+      \node[body] at (2.95,-2.35) {After (limited)};
+      \foreach \y/\w in {-2.68/0.72,-2.96/0.64,-3.24/0.58}
+      \draw[keeppurple] (2.60,\y) rectangle ++(\w,0.18);
+
+      % 5 nms
+      \node[cardred] (c5) at (5.85,0) {};
+      \node[title, text=red!75] at (5.85,3.05) {NMS};
+      \draw[red!70] (4.95,2.62) -- (6.75,2.62);
+      \node[body] at (5.85,1.80) {Remove redundant boxes\\with high IoU overlap\\against higher scores.};
+      \draw[red!35, dashed] (4.90,0.85) -- (6.80,0.85);
+      \node[body] at (5.85,0.58) {Before (overlap)};
+      \foreach \x/\y/\w/\h in {5.20/-0.55/0.55/0.32,5.55/-0.45/0.50/0.36,5.75/-0.78/0.55/0.36,5.30/-0.95/0.48/0.42,6.10/-0.60/0.55/0.34,6.35/-0.90/0.56/0.36}
+      \draw[red!65, dashed, fill=red!5, line width=0.6pt] (\x,\y) rectangle ++(\w,\h);
+      \draw[red!75, -{Stealth[length=5pt]}, line width=1.2pt] (5.85,-1.45) -- (5.85,-1.85);
+      \node[body] at (5.85,-2.10) {After (non-overlap)};
+      \foreach \x/\y/\w/\h in {5.15/-2.70/0.40/0.34,5.82/-2.95/0.42/0.36,6.55/-2.60/0.50/0.32}
+      \draw[keepred] (\x,\y) rectangle ++(\w,\h);
+
+      \draw[flow] (-4.55,0) -- (-4.10,0);
+      \draw[flow] (-1.65,0) -- (-1.20,0);
+      \draw[flow] (1.25,0) -- (1.70,0);
+      \draw[flow] (4.15,0) -- (4.60,0);
+    \end{tikzpicture}%
+  }
+\end{frame}
+

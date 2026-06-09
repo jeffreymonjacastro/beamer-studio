@@ -1,0 +1,47 @@
+% ── SLIDE 9: SORT HÚNGARO Y GESTIÓN ───────────────────────────────────────────
+\begin{frame}{SORT: Hungarian Assignment and Track Lifecycle}
+  \begin{columns}[T]
+    \begin{column}{0.50\textwidth}
+      \textbf{IoU-based cost matrix:}
+      \[
+        C_{ij} = 1 - \mathrm{IoU}(\hat{\tau}_i,\, b_j^t)
+      \]
+      where $\hat{\tau}_i$: Kalman-predicted bbox of track $i$,\;
+      $b_j^t$: detection $j$ at time $t$
+
+      \textbf{Hungarian algorithm} minimises total cost:
+      \[
+        \sigma^* = \arg\min_{\sigma} \sum_i C_{i,\sigma(i)}
+      \]
+      Match rejected if $\mathrm{IoU} < \tau_\mathrm{IoU} = 0.3$
+      \vspace{0.3em}
+      \begin{alertblock}{Separate trackers per class}
+        \small Independent SORT instances for pedestrians and cars
+        prevent cross-class identity confusion.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \textbf{Track lifecycle:}
+      \vspace{0.2em}
+      \resizebox{\linewidth}{!}{%
+        \begin{tikzpicture}[
+            st/.style={draw=utecblue, rounded corners=3pt, fill=utecblue!10,
+                minimum width=2.4cm, minimum height=0.52cm,
+                font=\scriptsize, align=center},
+            arr/.style={-{Stealth[length=4pt]}, utecblue!70}
+          ]
+          \node[st] (tent) {Tentative};
+          \node[st, below=0.6cm of tent, fill=uteccyan!15, draw=uteccyan]
+          (conf) {Confirmed};
+          \node[st, below=0.6cm of conf, fill=red!8, draw=red!50]
+          (dead) {Deleted};
+          \draw[arr] (tent) -- node[right,font=\tiny]{hits $\geq$ min\_hits (=3)} (conf);
+          \draw[arr] (conf) -- node[right,font=\tiny]{age $>$ max\_age (=30)} (dead);
+          \draw[arr] (tent.east) to[bend left=60]
+          node[right,font=\tiny]{no match} (dead.east);
+        \end{tikzpicture}
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+
