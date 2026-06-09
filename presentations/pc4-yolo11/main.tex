@@ -409,7 +409,7 @@
 
 
 % ── SLIDE 7: SPFF ──────────────────────────────────────────────
-\begin{frame}{YOLOv11: Spatial Pyramid Pooling Fast Block}
+\begin{frame}{YOLOv11: Spatial Pyramid Pooling Fast}
   \begin{columns}[c]
     \begin{column}{0.46\textwidth}
       \begin{itemize}
@@ -470,7 +470,7 @@
 
 
 % ── SLIDE 8: C2PSA ──────────────────────────────────────────────
-\begin{frame}{YOLOv11: Cross Stage Partial with Spatial Attention Block}
+\begin{frame}{YOLOv11: Cross Stage Partial Self-Attention}
   \begin{columns}[T]
     \begin{column}{0.5\textwidth}
       \centering
@@ -499,20 +499,21 @@
         ]
         \node[outer] (psa_box) at (-1.65,0) {};
         \node[font=\large\bfseries, text=utecblue!90] at (-1.65,2.46) {PSA};
-        \node[layer] (attn) at (-1.65,1.70) {Attention};
-        \node[layer] (p_concat1) at (-1.65,0.95) {Concat};
-        \node[layer] (ffn) at (-1.65,0.20) {FFN};
-        \node[layer] (p_conv1) at (-1.65,-0.55) {Conv 1x1};
-        \node[layer] (p_conv2) at (-1.65,-1.30) {Conv 1x1};
-        \node[layer] (p_concat2) at (-1.65,-2.05) {Concat};
+        \node[layer] (p_conv1) at (-1.65,1.70) {Conv 1x1};
+        \node[layer] (p_split) at (-1.65,0.95) {Split};
+        \node[layer] (attn) at (-1.65,0.20) {Attention};
+        \node[layer] (ffn) at (-1.65,-0.55) {FFN};
+        \node[layer] (p_concat) at (-1.65,-1.30) {Concat};
+        \node[layer] (p_conv2) at (-1.65,-2.05) {Conv 1x1};
+        \draw[utecblue!65, rounded corners=4pt, line width=0.8pt] (-2.62,0.57) rectangle (-0.68,-0.92);
+        \coordinate (psa_core_east) at (-0.68,-0.18);
 
-        \draw[arr] (attn) -- (p_concat1);
-        \draw[arr] (p_concat1) -- (ffn);
-        \draw[arr] (ffn) -- (p_conv1);
-        \draw[arr] (p_conv1) -- (p_conv2);
-        \draw[arr] (p_conv2) -- (p_concat2);
-        \draw[skip] (attn.east) -- ++(0.52,0) |- (p_concat1.east);
-        \draw[skip] (ffn.east) -- ++(0.52,0) |- (p_concat2.east);
+        \draw[arr] (p_conv1) -- (p_split);
+        \draw[arr] (p_split) -- (attn);
+        \draw[arr] (attn) -- (ffn);
+        \draw[arr] (ffn) -- (p_concat);
+        \draw[arr] (p_concat) -- (p_conv2);
+        \draw[skip] (p_split.east) -- ++(0.52,0) |- (p_concat.east);
 
         \node[outer] (c2_box) at (1.65,0) {};
         \node[font=\large\bfseries, text=utecblue!90] at (1.65,2.46) {C2PSA};
@@ -525,12 +526,12 @@
 
         \draw[arr] (c_conv1) -- (split);
         \draw[arr] (split) -- (psa1);
-        \draw[arr] (psa1) -- (psa2);
+        \draw[arr] (psa1) -- node[midway, right, font=\scriptsize\bfseries] {$n$} (psa2);
         \draw[arr] (psa2) -- (c_concat);
         \draw[arr] (c_concat) -- (c_conv2);
         \draw[skip] (split.east) -- ++(0.52,0) |- (c_concat.east);
 
-        \draw[arr] (psa_box.east) -- (c2_box.west);
+        \draw[arr] (psa_core_east) -- (c2_box.west);
       \end{tikzpicture}
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -638,32 +639,32 @@
       \node[detect] (d5) at (5.45,-2.20) {Detect};
 
       \draw[arr] (sppf) -- (c2psa);
-      \draw[route] (c2psa.east) -- ++(1.05,0) |- (up1.west);
+      \draw[route] (c2psa.east) -- ++(0.55,0) -- ++(0,0.80) -- (up1.west);
       \draw[arr] (up1) -- (concat1);
       \draw[arr] (concat1) -- (c3k2_1);
       \draw[arr] (c3k2_1) -- (up2);
       \draw[arr] (up2) -- (concat2);
       \draw[arr] (concat2) -- (c3k2_2);
 
-      \draw[route] (c3k2_2.east) -- ++(1.85,0) |- (r_cbs1.north);
+      \draw[route] (c3k2_2.east) -- ++(0.60,0) -- ++(0,0.55) -| (r_cbs1.north);
       \draw[arr] (r_cbs1) -- (r_concat1);
       \draw[arr] (r_concat1) -- (r_c3k2_1);
       \draw[arr] (r_c3k2_1) -- (r_cbs2);
       \draw[arr] (r_cbs2) -- (r_concat2);
       \draw[arr] (r_concat2) -- (r_c3k2_2);
 
-      \draw[route] (bb2.east) -- node[above,font=\small\bfseries,text=utecblue!85] {80x80} ++(1.45,0) |- (concat2.west);
-      \draw[route] (bb3.east) -- node[above,font=\small\bfseries,text=utecblue!85] {40x40} ++(1.95,0) |- (concat1.west);
-      \draw[route] (bb4.east) -- node[above,font=\small\bfseries,text=utecblue!85] {20x20} ++(1.55,0) |- (sppf.west);
+      \draw[route] (bb2.east) -- node[above,font=\tiny\bfseries,text=utecblue!85] {80x80} ++(1.45,0) |- (concat2.west);
+      \draw[route] (bb3.east) -- node[above,font=\tiny\bfseries,text=utecblue!85] {40x40} ++(1.45,0) |- (concat1.west);
+      \draw[route] (bb4.east) -- node[above,font=\tiny\bfseries,text=utecblue!85] {20x20} ++(1.45,0) |- (sppf.west);
 
-      \draw[route] (c2psa.east) -- ++(3.15,0) |- (r_concat2.west);
-      \draw[route] (c3k2_1.east) -- ++(2.20,0) |- (r_concat1.west);
+      \draw[route] (c2psa.south) -- ++(0,-0.30) -- (1.15,-2.95) -- (1.15,-1.35) -- (r_concat2.west);
+      \draw[route] (c3k2_1.east) -- ++(0.65,0) -- ++(0,1.11) -- (r_concat1.west);
 
       \node[font=\scriptsize\bfseries, text=utecblue!90, align=center] at (4.15,1.92) {P3/8\\[-1pt]\tiny 80x80};
       \node[font=\scriptsize\bfseries, text=utecblue!90, align=center] at (4.15,0.06) {P4/16\\[-1pt]\tiny 40x40};
       \node[font=\scriptsize\bfseries, text=utecblue!90, align=center] at (4.15,-1.72) {P5/32\\[-1pt]\tiny 20x20};
 
-      \draw[route] (c3k2_2.east) -- ++(0.55,0) -- ++(0,0.62) -- ++(1.36,0) -- ++(0,-1.87) -- (d3.west);
+      \draw[route] (c3k2_2.north) -- ++(0,0.42) -- (3.65,3.23) -- (3.65,1.33) -- (d3.west);
       \draw[route] (r_c3k2_1.east) -- ++(0.45,0) -- ++(0,-0.87) -- (d4.west);
       \draw[route] (r_c3k2_2.east) -- ++(0.45,0) -- (d5.west);
     \end{tikzpicture}%
